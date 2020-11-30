@@ -28,7 +28,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.Random;
 
@@ -62,7 +61,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         mImageStorage = FirebaseStorage.getInstance().getReference();
 
-        mDisplayImage = (CircleImageView) findViewById(R.id.setting_image);
+        mDisplayImage = (CircleImageView) findViewById(R.id.setting_user_image);
         mName = (TextView) findViewById(R.id.setting_display_name);
         mStatus = (TextView) findViewById(R.id.setting_status);
 
@@ -85,7 +84,10 @@ public class SettingsActivity extends AppCompatActivity {
                 mName.setText(name);
                 mStatus.setText(status);
 
-                Picasso.get().load(image).into(mDisplayImage);
+                if (!image.equals("default")) {
+                    Picasso.get().load(image).into(mDisplayImage);
+                }
+
             }
 
             @Override

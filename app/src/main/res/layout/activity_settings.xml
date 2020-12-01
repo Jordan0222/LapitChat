@@ -10,11 +10,11 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/setting_user_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="40dp"
         android:background="@color/colorPrimaryDark"
         android:src="@drawable/man"
         app:civ_border_color="@color/white"

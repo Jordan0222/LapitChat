@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,9 +66,23 @@ public class UserActivity extends AppCompatActivity {
         adapter = new FirebaseRecyclerAdapter<Users, UsersViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull UsersViewHolder holder, int position, @NonNull Users user) {
+
                 holder.setTxtDisplayName(user.getName());
                 holder.setTxtStatus(user.getStatus());
                 holder.setImage(user.getImage());
+
+                String user_id = getRef(position).getKey();
+
+                holder.root.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Intent profileIntent = new Intent(UserActivity.this, ProfileActivity.class);
+                        profileIntent.putExtra("user_id", user_id);
+                        startActivity(profileIntent);
+                        // Toast.makeText(UserActivity.this, String.valueOf(position), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override

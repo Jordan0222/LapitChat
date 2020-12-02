@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -31,6 +32,8 @@ public class StatusActivity extends AppCompatActivity {
     // Progress Dialog
     private ProgressDialog mProgress;
 
+    private DatabaseReference mUserRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +42,8 @@ public class StatusActivity extends AppCompatActivity {
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         String current_uid = mCurrentUser.getUid();
         mStatusDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
+
+        mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mCurrentUser.getUid());
 
         mToolbar = (Toolbar) findViewById(R.id.status_page_toolbar);
         setSupportActionBar(mToolbar);
@@ -72,5 +77,17 @@ public class StatusActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mUserRef.child("online").setValue(false);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mUserRef.child("online").setValue(true);
     }
 }

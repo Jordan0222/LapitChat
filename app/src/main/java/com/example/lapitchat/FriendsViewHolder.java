@@ -3,22 +3,23 @@ package com.example.lapitchat;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class UsersViewHolder extends RecyclerView.ViewHolder {
+public class FriendsViewHolder extends RecyclerView.ViewHolder{
 
-    public CircleImageView mDisplayImage;
+    public LinearLayout root;
+    // public TextView mDate;
     public TextView txtDisplayName;
     public TextView txtStatus;
-    public LinearLayout root;
+    public CircleImageView mDisplayImage;
 
-    public UsersViewHolder(@NonNull View itemView) {
+    public FriendsViewHolder(@NonNull View itemView) {
         super(itemView);
 
         root = itemView.findViewById(R.id.recycler_root);
@@ -31,11 +32,15 @@ public class UsersViewHolder extends RecyclerView.ViewHolder {
         txtDisplayName.setText(string);
     }
 
-    public void setTxtStatus(String string) {
-        txtStatus.setText(string);
-    }
+    /*public void setTxtDate(String string) {
+        mDate.setText(string);
+    }*/
 
     public void setImage(String string) {
         Picasso.get().load(string).into(mDisplayImage);
+    }
+
+    public void setTxtStatus(String string) {
+        txtStatus.setText(string);
     }
 }

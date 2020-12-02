@@ -6,9 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -27,20 +27,22 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 
-import java.io.File;
 import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import id.zelory.compressor.Compressor;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private static final int MAX_LENGTH = 10;
+
     private DatabaseReference mUserDatabase;
     private FirebaseUser mCurrentUser;
+    private DatabaseReference mUserRef;
 
     private CircleImageView mDisplayImage;
     private TextView mName;
@@ -61,10 +63,11 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+        mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mCurrentUser.getUid());
 
         mImageStorage = FirebaseStorage.getInstance().getReference();
 
-        mDisplayImage = (CircleImageView) findViewById(R.id.setting_user_image);
+        mDisplayImage = (CircleImageView) findViewById(R.id.profile_image);
         mName = (TextView) findViewById(R.id.setting_display_name);
         mStatus = (TextView) findViewById(R.id.setting_status);
 
@@ -74,6 +77,7 @@ public class SettingsActivity extends AppCompatActivity {
         String current_uid = mCurrentUser.getUid();
 
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
+        mUserDatabase.keepSynced(true);
 
         mUserDatabase.addValueEventListener(new ValueEventListener() {
             @Override
@@ -88,7 +92,19 @@ public class SettingsActivity extends AppCompatActivity {
                 mStatus.setText(status);
 
                 if (!image.equals("default")) {
-                    Picasso.get().load(image).into(mDisplayImage);
+                    // Picasso.get().load(image).into(mDisplayImage);
+                    Picasso.get().load(image).networkPolicy(NetworkPolicy.OFFLINE).into(mDisplayImage, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            // if failure load image online
+                            Picasso.get().load(image).into(mDisplayImage);
+                        }
+                    });
                 }
 
             }
@@ -187,6 +203,18 @@ public class SettingsActivity extends AppCompatActivity {
                 Exception error = result.getError();
             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mUserRef.child("online").setValue(false);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mUserRef.child("online").setValue(true);
     }
 
     public static String random() {

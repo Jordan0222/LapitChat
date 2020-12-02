@@ -5,17 +5,17 @@
     android:id="@+id/settings_image"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
+    android:background="@drawable/snow2"
     tools:context=".SettingsActivity">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/setting_user_image"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
+        android:id="@+id/profile_image"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginTop="40dp"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/cardview_shadow_end_color"
         android:src="@drawable/man"
         app:civ_border_color="@color/white"
         app:civ_border_width="2dp"
@@ -27,13 +27,13 @@
         android:id="@+id/setting_display_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:text="Display Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/setting_user_image" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
     <TextView
         android:id="@+id/setting_status"
@@ -42,7 +42,7 @@
         android:layout_marginTop="32dp"
         android:text="Hi jordan, I'm using Lapi Chat"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/setting_display_name" />
@@ -51,7 +51,7 @@
         android:id="@+id/setting_img_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="72dp"
         android:text="Change Image"
         android:textColor="@color/purple_700"
         app:layout_constraintEnd_toEndOf="parent"

@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class FriendsFragment extends Fragment {
 
+    private static final String TAG = FriendsFragment.class.getSimpleName();
     private RecyclerView mFriendsList;
 
     private DatabaseReference mFriendsDatabase;
@@ -90,10 +92,14 @@ public class FriendsFragment extends Fragment {
                         String userName = snapshot.child("name").getValue().toString();
                         String userImage = snapshot.child("image").getValue().toString();
                         String userStatus = snapshot.child("status").getValue().toString();
+                        String userOnline = snapshot.child("online").getValue().toString();
+
+                        Log.d(TAG, "onDataChange: " + userOnline);
 
                         holder.setTxtDisplayName(userName);
                         holder.setImage(userImage);
                         holder.setTxtStatus(userStatus);
+                        holder.setUserOnline(userOnline);
                     }
 
                     @Override

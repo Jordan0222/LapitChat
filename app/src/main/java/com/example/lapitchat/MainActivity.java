@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TabLayout mTabLayout;
 
+    private FirebaseUser mCurrent_user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +41,12 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Lapi Chat");
 
         mAuth = FirebaseAuth.getInstance();
-        mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
+        mCurrent_user = mAuth.getCurrentUser();
+
+        if (mCurrent_user != null) {
+            mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mCurrent_user.getUid());
+        }
+
 
         mViewPager = findViewById(R.id.main_tabPager);
         mSectionPagerAdapter = new SectionPagerAdapter(getSupportFragmentManager());

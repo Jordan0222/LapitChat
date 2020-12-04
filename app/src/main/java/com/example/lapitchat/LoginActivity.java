@@ -21,7 +21,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 public class LoginActivity extends AppCompatActivity {
@@ -53,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
 
-        mLoginEmail = findViewById(R.id.status_input);
+        mLoginEmail = findViewById(R.id.message_input);
         mLoginPassword = findViewById(R.id.login_password);
 
         mLoginProgress = new ProgressDialog(this);

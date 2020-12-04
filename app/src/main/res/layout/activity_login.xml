@@ -10,7 +10,7 @@
         android:id="@+id/login_page_toolbar"/>
 
     <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/status_input"
+        android:id="@+id/message_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"

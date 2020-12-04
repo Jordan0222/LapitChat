@@ -8,7 +8,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,6 +22,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -67,7 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         mImageStorage = FirebaseStorage.getInstance().getReference();
 
-        mDisplayImage = (CircleImageView) findViewById(R.id.profile_image);
+        mDisplayImage = (CircleImageView) findViewById(R.id.custom_bar_image);
         mName = (TextView) findViewById(R.id.setting_display_name);
         mStatus = (TextView) findViewById(R.id.setting_status);
 
@@ -208,7 +208,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mUserRef.child("online").setValue(false);
+        mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
     }
 
     @Override

@@ -8,7 +8,7 @@
     tools:context=".ProfileActivity">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_image"
+        android:id="@+id/custom_bar_image"
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_alignParentEnd="true"
@@ -32,7 +32,7 @@
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+        app:layout_constraintTop_toBottomOf="@+id/custom_bar_image" />
 
 
     <TextView

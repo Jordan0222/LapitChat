@@ -1,5 +1,7 @@
 package com.example.lapitchat;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -100,6 +102,39 @@ public class FriendsFragment extends Fragment {
                         holder.setImage(userImage);
                         holder.setTxtStatus(userStatus);
                         holder.setUserOnline(userOnline);
+
+                        holder.root.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                CharSequence options[] = new CharSequence[]{"Opene Profile", "Send Message"};
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+                                builder.setTitle("Select Options");
+                                builder.setItems(options, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        // Click Event for each item
+                                        if (which == 0) {
+
+                                            Intent profileIntent = new Intent(getContext(), ProfileActivity.class);
+                                            profileIntent.putExtra("user_id", user_id);
+                                            startActivity(profileIntent);
+
+                                        } else if (which == 1){
+
+                                            Intent chatIntent = new Intent(getContext(), ChatActivity.class);
+                                            chatIntent.putExtra("user_id", user_id);
+                                            chatIntent.putExtra("user_name", userName);
+                                            startActivity(chatIntent);
+                                        }
+
+                                    }
+                                });
+                                builder.show();
+                            }
+                        });
                     }
 
                     @Override

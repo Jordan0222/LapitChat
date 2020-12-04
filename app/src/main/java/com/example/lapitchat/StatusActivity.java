@@ -3,20 +3,18 @@ package com.example.lapitchat;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 public class StatusActivity extends AppCompatActivity {
@@ -50,7 +48,7 @@ public class StatusActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Account Status");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mStatus = (MaterialEditText) findViewById(R.id.status_input);
+        mStatus = (MaterialEditText) findViewById(R.id.message_input);
         mStatbtn = (Button) findViewById(R.id.status_save_btn);
 
         String status_value = getIntent().getStringExtra("status_value");
@@ -82,7 +80,7 @@ public class StatusActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mUserRef.child("online").setValue(false);
+        mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
     }
 
     @Override

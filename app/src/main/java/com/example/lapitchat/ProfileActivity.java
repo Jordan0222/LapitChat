@@ -12,9 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -69,7 +67,7 @@ public class ProfileActivity extends AppCompatActivity {
         mProfileName = (TextView) findViewById(R.id.profile_displayname);
         mProfileFriendsCount = (TextView) findViewById(R.id.profile_friends);
         mProfileStatus = (TextView) findViewById(R.id.profile_status);
-        mProfileImage = (CircleImageView) findViewById(R.id.profile_image);
+        mProfileImage = (CircleImageView) findViewById(R.id.custom_bar_image);
 
         // Button
         mProfileSendReqBtn = (Button) findViewById(R.id.profile_req_btn);

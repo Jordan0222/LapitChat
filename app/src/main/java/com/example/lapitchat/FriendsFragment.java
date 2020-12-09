@@ -127,6 +127,7 @@ public class FriendsFragment extends Fragment {
                                             Intent chatIntent = new Intent(getContext(), ChatActivity.class);
                                             chatIntent.putExtra("user_id", user_id);
                                             chatIntent.putExtra("user_name", userName);
+                                            chatIntent.putExtra("user_image", userImage);
                                             startActivity(chatIntent);
                                         }
 

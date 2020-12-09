@@ -19,6 +19,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -67,7 +68,7 @@ public class ProfileActivity extends AppCompatActivity {
         mProfileName = (TextView) findViewById(R.id.profile_displayname);
         mProfileFriendsCount = (TextView) findViewById(R.id.profile_friends);
         mProfileStatus = (TextView) findViewById(R.id.profile_status);
-        mProfileImage = (CircleImageView) findViewById(R.id.custom_bar_image);
+        mProfileImage = (CircleImageView) findViewById(R.id.message_image_layout);
 
         // Button
         mProfileSendReqBtn = (Button) findViewById(R.id.profile_req_btn);
@@ -299,7 +300,7 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mUserRef.child("online").setValue(false);
+        mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
     }
 
     @Override

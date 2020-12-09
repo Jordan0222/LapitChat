@@ -48,7 +48,7 @@ public class StatusActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Account Status");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mStatus = (MaterialEditText) findViewById(R.id.message_input);
+        mStatus = (MaterialEditText) findViewById(R.id.chat_message_view);
         mStatbtn = (Button) findViewById(R.id.status_save_btn);
 
         String status_value = getIntent().getStringExtra("status_value");

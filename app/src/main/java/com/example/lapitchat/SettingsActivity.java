@@ -67,7 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         mImageStorage = FirebaseStorage.getInstance().getReference();
 
-        mDisplayImage = (CircleImageView) findViewById(R.id.custom_bar_image);
+        mDisplayImage = (CircleImageView) findViewById(R.id.message_image_layout);
         mName = (TextView) findViewById(R.id.setting_display_name);
         mStatus = (TextView) findViewById(R.id.setting_status);
 

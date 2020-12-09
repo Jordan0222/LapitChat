@@ -46,8 +46,7 @@ public class LapiChat extends Application {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot != null) {
-                        mUserDatabase.child("online").onDisconnect().setValue(false);
-                        mUserDatabase.child("lastSeen").setValue(ServerValue.TIMESTAMP);
+                        mUserDatabase.child("online").onDisconnect().setValue(ServerValue.TIMESTAMP);
                     }
                 }
 

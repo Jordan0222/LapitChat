@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
 
-        mLoginEmail = findViewById(R.id.message_input);
+        mLoginEmail = findViewById(R.id.chat_message_view);
         mLoginPassword = findViewById(R.id.login_password);
 
         mLoginProgress = new ProgressDialog(this);

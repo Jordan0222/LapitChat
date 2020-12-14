@@ -40,26 +40,28 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ChatActivity extends AppCompatActivity {
+public class EncryptActivity extends AppCompatActivity {
 
-    private String mChatUser, mCurrentUserId;
-    private Toolbar mChatToolbar;
-
-    private DatabaseReference mRoofRef, mUserRef;
-
-    private FirebaseAuth mAuth;
-    private FirebaseUser mCurrent_user;
-
+    private static final String TAG = EncryptActivity.class.getSimpleName();
     private TextView mTitleView, mLastSeenView;
-    private CircleImageView mChatImage;
-    private ImageButton mChatAddBtn, mChatSendBtn;
-    private MaterialEditText mChatMessageView;
+    private CircleImageView mEncryptChatImage;
+    private ImageButton mEncryptChatAddBtn, mEncryptChatSendBtn;
+    private MaterialEditText mEncryptChatMessageView;
     private RecyclerView mMessageList;
     private SwipeRefreshLayout mRefreshLayout;
 
-    private final List<Message> messageList = new ArrayList<>();
+    // Firebase
+    private FirebaseAuth mAuth;
+    private FirebaseUser mCurrent_user;
+    private DatabaseReference mUserRef, mEncryptRoofRef;
+
+    private String mChatUser, mCurrentUserId;
+
+    private Toolbar mEncryptChatToolbar;
+
+    private final List<EncryptMessage> messageList = new ArrayList<>();
     private LinearLayoutManager mLinearLayout;
-    private MessageAdapter mAdapter;
+    private EncryptActivity.MessageAdapter mAdapter;
 
     private static final int TOTAL_ITEMS_TO_LOAD = 10;
     private int mCurrentPage = 1;
@@ -71,7 +73,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        setContentView(R.layout.activity_encrypt);
 
         mAuth = FirebaseAuth.getInstance();
         mCurrent_user = mAuth.getCurrentUser();
@@ -82,14 +84,14 @@ public class ChatActivity extends AppCompatActivity {
 
         mCurrentUserId = mCurrent_user.getUid();
 
-        mRoofRef = FirebaseDatabase.getInstance().getReference();
+        mEncryptRoofRef = FirebaseDatabase.getInstance().getReference();
 
         mChatUser = getIntent().getStringExtra("user_id");
-        String chat_user_name = getIntent().getStringExtra("user_name");
-        String chat_user_image = getIntent().getStringExtra("user_image");
+        String encryptChat_user_name = getIntent().getStringExtra("user_name");
+        String encryptChat_user_image = getIntent().getStringExtra("user_image");
 
-        mChatToolbar = findViewById(R.id.chat_app_bar);
-        setSupportActionBar(mChatToolbar);
+        mEncryptChatToolbar = findViewById(R.id.encryptChat_app_bar);
+        setSupportActionBar(mEncryptChatToolbar);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -114,10 +116,10 @@ public class ChatActivity extends AppCompatActivity {
 
         // -------------Custom Action bar items-----------------
 
-        mTitleView.setText(chat_user_name);
-        Picasso.get().load(chat_user_image).into(mChatImage);
+        mTitleView.setText(encryptChat_user_name);
+        Picasso.get().load(encryptChat_user_image).into(mEncryptChatImage);
 
-        mRoofRef.child("Users").child(mChatUser).addValueEventListener(new ValueEventListener() {
+        mEncryptRoofRef.child("Users").child(mChatUser).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -140,7 +142,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        mRoofRef.child("Chat").child(mCurrentUserId).addValueEventListener(new ValueEventListener() {
+        mEncryptRoofRef.child("Chat").child(mCurrentUserId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -154,7 +156,7 @@ public class ChatActivity extends AppCompatActivity {
                     chatUserMap.put("Chat" + "/" + mCurrentUserId + "/" + mChatUser, chatAddMap);
                     chatUserMap.put("Chat" + "/" + mChatUser + "/" + mCurrentUserId, chatAddMap);
 
-                    mRoofRef.updateChildren(chatUserMap, new DatabaseReference.CompletionListener() {
+                    mEncryptRoofRef.updateChildren(chatUserMap, new DatabaseReference.CompletionListener() {
                         @Override
                         public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                             if (error != null) {
@@ -171,8 +173,8 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-        
-        mChatSendBtn.setOnClickListener(new View.OnClickListener() {
+
+        mEncryptChatSendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendMessage();
@@ -193,19 +195,19 @@ public class ChatActivity extends AppCompatActivity {
 
     private void loadMoreMessages() {
 
-        DatabaseReference messageRef = mRoofRef.child("messages").child(mCurrentUserId).child(mChatUser);
-        Query messageQuery = messageRef.orderByKey().endAt(mLastKey).limitToLast(10);
+        DatabaseReference encryptMessageRef = mEncryptRoofRef.child("encryptMessages").child(mCurrentUserId).child(mChatUser);
+        Query messageQuery = encryptMessageRef.orderByKey().endAt(mLastKey).limitToLast(10);
 
         messageQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                Message message = snapshot.getValue(Message.class);
+                EncryptMessage encryptMessage = snapshot.getValue(EncryptMessage.class);
                 String messageKey = snapshot.getKey();
                 // messageList.add(itemPos++, message);
 
                 if (!mPrevKey.equals(messageKey)) {
-                    messageList.add(itemPos++, message);
+                    messageList.add(itemPos++, encryptMessage);
                 } else {
                     mPrevKey = mLastKey;
                 }
@@ -245,13 +247,13 @@ public class ChatActivity extends AppCompatActivity {
 
     private void loadMessages() {
 
-        DatabaseReference messageRef = mRoofRef.child("messages").child(mCurrentUserId).child(mChatUser);
-        Query messageQuery = messageRef.limitToLast(mCurrentPage * TOTAL_ITEMS_TO_LOAD);
+        DatabaseReference encryptMessageRef = mEncryptRoofRef.child("encryptMessages").child(mCurrentUserId).child(mChatUser);
+        Query messageQuery = encryptMessageRef.limitToLast(mCurrentPage * TOTAL_ITEMS_TO_LOAD);
 
         messageQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Message message = snapshot.getValue(Message.class);
+                EncryptMessage encryptMessage = snapshot.getValue(EncryptMessage.class);
 
                 itemPos++;
 
@@ -261,7 +263,7 @@ public class ChatActivity extends AppCompatActivity {
                     mPrevKey = mLastKey;
                 }
 
-                messageList.add(message);
+                messageList.add(encryptMessage);
                 mAdapter.notifyDataSetChanged();
 
                 mMessageList.scrollToPosition(messageList.size() -1);
@@ -292,19 +294,19 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendMessage() {
-        String message = mChatMessageView.getText().toString();
+        String message = mEncryptChatMessageView.getText().toString();
 
         if (!TextUtils.isEmpty(message)) {
-            String current_user_ref = "messages" + "/" + mCurrentUserId + "/" + mChatUser;
-            String chat_user_ref =  "messages" + "/" + mChatUser + "/" + mCurrentUserId;
+            String current_user_ref = "encryptMessages" + "/" + mCurrentUserId + "/" + mChatUser;
+            String chat_user_ref =  "encryptMessages" + "/" + mChatUser + "/" + mCurrentUserId;
 
-            DatabaseReference user_message_push = mRoofRef.child("messages")
+            DatabaseReference user_message_push = mEncryptRoofRef.child("encryptMessages")
                     .child(mCurrentUserId).child(mChatUser).push();
 
             String push_id = user_message_push.getKey();
 
             Map messageMap = new HashMap();
-            messageMap.put("message", message);
+            messageMap.put("encryptMessage", message);
             messageMap.put("seen", false);
             messageMap.put("type", "text");
             messageMap.put("time", ServerValue.TIMESTAMP);
@@ -314,9 +316,9 @@ public class ChatActivity extends AppCompatActivity {
             messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
             messageUserMap.put(chat_user_ref + "/" + push_id, messageMap);
 
-            mChatMessageView.setText("");
+            mEncryptChatMessageView.setText("");
 
-            mRoofRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
+            mEncryptRoofRef.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                     if (error != null) {
@@ -331,24 +333,24 @@ public class ChatActivity extends AppCompatActivity {
 
         mTitleView = findViewById(R.id.custom_name);
         mLastSeenView = findViewById(R.id.custom_seen);
-        mChatImage = findViewById(R.id.chat_custom_image_layout);
+        mEncryptChatImage = findViewById(R.id.chat_custom_image_layout);
 
-        mChatAddBtn = findViewById(R.id.chat_add_btn);
-        mChatSendBtn = findViewById(R.id.chat_send_btn);
-        mChatMessageView = findViewById(R.id.chat_message_view);
+        mEncryptChatAddBtn = findViewById(R.id.encryptChat_add_btn);
+        mEncryptChatSendBtn = findViewById(R.id.encryptChat_send_btn);
+        mEncryptChatMessageView = findViewById(R.id.encryptChat_message_view);
 
-        mMessageList = findViewById(R.id.chat_message_list);
+        mMessageList = findViewById(R.id.encryptChat_message_list);
 
-        mRefreshLayout = findViewById(R.id.chat_swipe_layout);
+        mRefreshLayout = findViewById(R.id.encryptChat_swipe_layout);
 
     }
 
     public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
-        private List<Message> MessageList;
+        private List<EncryptMessage> MessageList;
         private FirebaseAuth firebaseAuth;
 
-        public MessageAdapter(List<Message> MessageList) {
+        public MessageAdapter(List<EncryptMessage> MessageList) {
             super();
             this.MessageList = MessageList;
         }
@@ -360,16 +362,16 @@ public class ChatActivity extends AppCompatActivity {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.message_single_layout, parent, false);
 
-            return new MessageViewHolder(view);
+            return new EncryptActivity.MessageAdapter.MessageViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull EncryptActivity.MessageAdapter.MessageViewHolder holder, int position) {
 
             firebaseAuth = FirebaseAuth.getInstance();
             String current_user_id = mAuth.getCurrentUser().getUid();
 
-            Message c = MessageList.get(position);
+            EncryptMessage c = MessageList.get(position);
             String from_user = c.getFrom();
 
             if (from_user != null) {
@@ -381,7 +383,8 @@ public class ChatActivity extends AppCompatActivity {
                     holder.messageText.setTextColor(Color.WHITE);
                 }
             }
-            holder.messageText.setText(c.getMessage());
+            String message = c.getEncryptMessage();
+            holder.messageText.setText(c.getEncryptMessage());
         }
 
         @Override

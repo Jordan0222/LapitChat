@@ -10,7 +10,7 @@
     android:padding="10dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/message_image_layout"
+        android:id="@+id/chat_custom_image_layout"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_alignParentEnd="true"
@@ -33,7 +33,7 @@
         android:background="@drawable/message_text_background"
         android:padding="10dp"
         android:text="TextView"
-        app:layout_constraintStart_toEndOf="@+id/message_image_layout"
+        app:layout_constraintStart_toEndOf="@+id/chat_custom_image_layout"
         app:layout_constraintTop_toTopOf="parent" />
 
 </LinearLayout>

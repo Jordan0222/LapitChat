@@ -68,7 +68,7 @@ public class ProfileActivity extends AppCompatActivity {
         mProfileName = (TextView) findViewById(R.id.profile_displayname);
         mProfileFriendsCount = (TextView) findViewById(R.id.profile_friends);
         mProfileStatus = (TextView) findViewById(R.id.profile_status);
-        mProfileImage = (CircleImageView) findViewById(R.id.message_image_layout);
+        mProfileImage = (CircleImageView) findViewById(R.id.chat_custom_image_layout);
 
         // Button
         mProfileSendReqBtn = (Button) findViewById(R.id.profile_req_btn);

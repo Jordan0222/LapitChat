@@ -63,9 +63,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class EncryptActivity extends AppCompatActivity {
+public class OneTimePadActivity extends AppCompatActivity {
 
-    private static final String TAG = EncryptActivity.class.getSimpleName();
+    private static final String TAG = OneTimePadActivity.class.getSimpleName();
     private TextView mTitleView, mLastSeenView;
     private CircleImageView mEncryptChatImage;
     private ImageButton mEncryptChatAddBtn, mEncryptChatSendBtn;
@@ -84,7 +84,7 @@ public class EncryptActivity extends AppCompatActivity {
 
     private final List<EncryptMessage> messageList = new ArrayList<>();
     private LinearLayoutManager mLinearLayout;
-    private EncryptActivity.MessageAdapter mAdapter;
+    private OneTimePadActivity.MessageAdapter mAdapter;
 
     private static final int TOTAL_ITEMS_TO_LOAD = 10;
     private int mCurrentPage = 1;
@@ -93,20 +93,20 @@ public class EncryptActivity extends AppCompatActivity {
     private String mLastKey = "";
     private String mPrevKey = "";
 
-    // AES
-    /*private static final String ivAES = "1427214c1fc961ef";
-    private static final String keyAES = "f55042c177304e62a2a6207d9530036e";*/
-    private static String ivAES = null;
-    private static String keyAES = null;
+
+    private static String keyOTP = null;
 
     private static final int PERMISSION_REQUEST_STORAGE = 1000;
     private static final int READ_REQUEST_CODE = 42;
+
     private static final String ALGORITHM_MD5 = "MD5";
+
+    private static int dataLength = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_encrypt);
+        setContentView(R.layout.activity_one_time_pad);
 
         // 取得使用者允許
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission
@@ -144,34 +144,30 @@ public class EncryptActivity extends AppCompatActivity {
 
         findViews();
 
-        keyAES = getSharedPreferences("AES", MODE_PRIVATE)
-                .getString("keyAES", null);
+        keyOTP = getSharedPreferences("OTP", MODE_PRIVATE)
+                .getString("keyOTP", null);
 
-        ivAES = getSharedPreferences("AES", MODE_PRIVATE)
-                .getString("ivAES", null);
-
-        mAdapter = new MessageAdapter(messageList);
+        mAdapter = new OneTimePadActivity.MessageAdapter(messageList);
         mLinearLayout = new LinearLayoutManager(this);
         mMessageList.setHasFixedSize(true);
         mMessageList.setLayoutManager(mLinearLayout);
-        if (keyAES == null || ivAES == null) {
+        mMessageList.setAdapter(mAdapter);
+
+        if (keyOTP == null) {
         } else {
             mMessageList.setAdapter(mAdapter);
         }
 
-        if (keyAES == null || ivAES == null) {
-            new AlertDialog.Builder(EncryptActivity.this)
+        if (keyOTP == null) {
+            new AlertDialog.Builder(OneTimePadActivity.this)
                     .setTitle("Import Key")
                     .setMessage("Do you want to import your key?")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             performFileSearch();
-                            keyAES = getSharedPreferences("AES", MODE_PRIVATE)
-                                        .getString("keyAES", null);
-
-                            ivAES = getSharedPreferences("AES", MODE_PRIVATE)
-                                        .getString("ivAES", null);
+                            keyOTP = getSharedPreferences("OTP", MODE_PRIVATE)
+                                    .getString("keyOTP", null);
                         }
                     })
                     .setNeutralButton("Cancel", null)
@@ -247,14 +243,15 @@ public class EncryptActivity extends AppCompatActivity {
                 // messageList.clear();
                 // loadMessages();
                 itemPos = 0;
-                if (keyAES == null || ivAES == null) {
-                    Toast.makeText(EncryptActivity.this, "You don't import your key", Toast.LENGTH_SHORT).show();
+                if (keyOTP == null) {
+                    Toast.makeText(OneTimePadActivity.this, "You don't import your key", Toast.LENGTH_SHORT).show();
                 } else {
                     loadMoreMessages();
                 }
             }
         });
     }
+
     // read content of the file
     private String readText(String input) {
         // File file = Environment.getExternalStorageDirectory();
@@ -298,13 +295,11 @@ public class EncryptActivity extends AppCompatActivity {
                 String binaryKey = readText(path);
 
                 try {
-                    final String keyAES = MD5_32bit(binaryKey);
-                    final String ivAES = MD5_16bit(keyAES);
+                    final String keyOTP = MD5_32bit(binaryKey);
 
-                    getSharedPreferences("AES", MODE_PRIVATE)
+                    getSharedPreferences("OTP", MODE_PRIVATE)
                             .edit()
-                            .putString("keyAES", keyAES)
-                            .putString("ivAES", ivAES)
+                            .putString("keyOTP", keyOTP)
                             .commit();
 
                 } catch (NoSuchAlgorithmException e) {
@@ -328,7 +323,8 @@ public class EncryptActivity extends AppCompatActivity {
 
     private void loadMoreMessages() {
 
-        DatabaseReference encryptMessageRef = mEncryptRoofRef.child("encryptMessages").child(mCurrentUserId).child(mChatUser);
+        DatabaseReference encryptMessageRef = mEncryptRoofRef.child("OTPMessages")
+                .child(mCurrentUserId).child(mChatUser);
         Query messageQuery = encryptMessageRef.orderByKey().endAt(mLastKey).limitToLast(10);
 
         messageQuery.addChildEventListener(new ChildEventListener() {
@@ -377,7 +373,8 @@ public class EncryptActivity extends AppCompatActivity {
 
     private void loadMessages() {
 
-        DatabaseReference encryptMessageRef = mEncryptRoofRef.child("encryptMessages").child(mCurrentUserId).child(mChatUser);
+        DatabaseReference encryptMessageRef = mEncryptRoofRef.child("OTPMessages")
+                .child(mCurrentUserId).child(mChatUser);
         Query messageQuery = encryptMessageRef.limitToLast(mCurrentPage * TOTAL_ITEMS_TO_LOAD);
 
         messageQuery.addChildEventListener(new ChildEventListener() {
@@ -427,18 +424,18 @@ public class EncryptActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void sendMessage() {
         String message = mEncryptChatMessageView.getText().toString();
+        dataLength = message.length();
 
-        byte[] encryptByte = EncryptAES(ivAES.getBytes(StandardCharsets.UTF_8),
-                keyAES.getBytes(StandardCharsets.UTF_8),
-                message.getBytes(StandardCharsets.UTF_8));
+        byte[] encryptByte = encrypt(message.getBytes(StandardCharsets.UTF_8),
+                keyOTP.getBytes(StandardCharsets.UTF_8));
 
         String encryptMessage = Base64.encodeToString(encryptByte, Base64.DEFAULT);
 
         if (!TextUtils.isEmpty(message)) {
-            String current_user_ref = "encryptMessages" + "/" + mCurrentUserId + "/" + mChatUser;
-            String chat_user_ref =  "encryptMessages" + "/" + mChatUser + "/" + mCurrentUserId;
+            String current_user_ref = "OTPMessages" + "/" + mCurrentUserId + "/" + mChatUser;
+            String chat_user_ref =  "OTPMessages" + "/" + mChatUser + "/" + mCurrentUserId;
 
-            DatabaseReference user_message_push = mEncryptRoofRef.child("encryptMessages")
+            DatabaseReference user_message_push = mEncryptRoofRef.child("OTPMessages")
                     .child(mCurrentUserId).child(mChatUser).push();
 
             String push_id = user_message_push.getKey();
@@ -477,11 +474,8 @@ public class EncryptActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 performFileSearch();
-                keyAES = getSharedPreferences("AES", MODE_PRIVATE)
-                        .getString("keyAES", null);
-
-                ivAES = getSharedPreferences("AES", MODE_PRIVATE)
-                        .getString("ivAES", null);
+                keyOTP = getSharedPreferences("OTP", MODE_PRIVATE)
+                        .getString("keyOTP", null);
             }
         });
 
@@ -490,8 +484,9 @@ public class EncryptActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-                if (keyAES == null || ivAES == null) {
-                    Toast.makeText(EncryptActivity.this, "You don't import your key", Toast.LENGTH_SHORT).show();
+                if (keyOTP == null) {
+                    Toast.makeText(OneTimePadActivity.this,
+                            "You don't import your key", Toast.LENGTH_SHORT).show();
                 } else {
                     sendMessage();
                 }
@@ -504,7 +499,8 @@ public class EncryptActivity extends AppCompatActivity {
 
     }
 
-    public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
+    public class MessageAdapter extends
+            RecyclerView.Adapter<OneTimePadActivity.MessageAdapter.MessageViewHolder> {
 
         private List<EncryptMessage> MessageList;
         private FirebaseAuth firebaseAuth;
@@ -516,17 +512,17 @@ public class EncryptActivity extends AppCompatActivity {
 
         @NonNull
         @Override
-        public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public OneTimePadActivity.MessageAdapter.MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.message_single_layout, parent, false);
 
-            return new EncryptActivity.MessageAdapter.MessageViewHolder(view);
+            return new OneTimePadActivity.MessageAdapter.MessageViewHolder(view);
         }
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
-        public void onBindViewHolder(@NonNull EncryptActivity.MessageAdapter.MessageViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull OneTimePadActivity.MessageAdapter.MessageViewHolder holder, int position) {
 
             firebaseAuth = FirebaseAuth.getInstance();
             String current_user_id = mAuth.getCurrentUser().getUid();
@@ -545,9 +541,9 @@ public class EncryptActivity extends AppCompatActivity {
             }
             String encryptMessage = c.getEncryptMessage();
 
-            byte[] TextByte = DecryptAES(ivAES.getBytes(StandardCharsets.UTF_8),
-                    keyAES.getBytes(StandardCharsets.UTF_8),
-                    Base64.decode(encryptMessage.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT));
+            byte[] TextByte = encrypt(
+                    Base64.decode(encryptMessage.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT),
+                    keyOTP.getBytes(StandardCharsets.UTF_8));
 
             if (TextByte != null) {
                 String decryptMessage = new String(TextByte, StandardCharsets.UTF_8);
@@ -571,37 +567,6 @@ public class EncryptActivity extends AppCompatActivity {
                 messageText = itemView.findViewById(R.id.message_text_layout);
                 mProfileImage = itemView.findViewById(R.id.chat_custom_image_layout);
             }
-        }
-    }
-
-    private static byte[] EncryptAES(byte[] iv, byte[] key, byte[] text) {
-        try {
-
-            AlgorithmParameterSpec mAlgorithmParameterSpec = new IvParameterSpec(iv);
-            SecretKeySpec mSecretKeySpec = new SecretKeySpec(key, "AES");
-            Cipher mCipher = null;
-            mCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            mCipher.init(Cipher.ENCRYPT_MODE, mSecretKeySpec, mAlgorithmParameterSpec);
-
-            return mCipher.doFinal(text);
-
-        } catch (Exception ex){
-            return null;
-        }
-    }
-
-    private static byte[] DecryptAES(byte[] iv,byte[] key,byte[] text) {
-        try {
-
-            AlgorithmParameterSpec mAlgorithmParameterSpec = new IvParameterSpec(iv);
-            SecretKeySpec mSecretKeySpec = new SecretKeySpec(key, "AES");
-            Cipher mCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            mCipher.init(Cipher.DECRYPT_MODE, mSecretKeySpec, mAlgorithmParameterSpec);
-
-            return mCipher.doFinal(text);
-
-        } catch(Exception ex) {
-            return null;
         }
     }
 
@@ -635,6 +600,20 @@ public class EncryptActivity extends AppCompatActivity {
         } else {
             return null;
         }
+    }
+
+    public static byte[] encrypt(byte[] data, byte[] key) {
+        if (data == null || data.length == 0 || key == null || key.length == 0) {
+            return data;
+        }
+
+        byte[] result = new byte[data.length];
+
+        for (int i = 0; i < data.length; i++) {
+            result[i] = (byte) (data[i] ^ key[i % key.length] ^ (i & 0xFF));
+        }
+
+        return result;
     }
 
     @Override

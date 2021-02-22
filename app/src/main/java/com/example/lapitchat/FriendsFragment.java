@@ -107,7 +107,11 @@ public class FriendsFragment extends Fragment {
                             @Override
                             public void onClick(View v) {
 
-                                CharSequence options[] = new CharSequence[]{"Open Profile", "Send Message", "Send Encrypt Message"};
+                                CharSequence options[] =
+                                        new CharSequence[]{"Open Profile",
+                                                "Send Message",
+                                                "Send Encrypt Message",
+                                                "Send OTP Message"};
                                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
                                 builder.setTitle("Select Options");
@@ -138,8 +142,15 @@ public class FriendsFragment extends Fragment {
                                             encryptChatIntent.putExtra("user_image", userImage);
                                             startActivity(encryptChatIntent);
 
-                                        }
+                                        } else if (which == 3) {
 
+                                            Intent encryptChatIntent = new Intent(getContext(), OneTimePadActivity.class);
+                                            encryptChatIntent.putExtra("user_id", user_id);
+                                            encryptChatIntent.putExtra("user_name", userName);
+                                            encryptChatIntent.putExtra("user_image", userImage);
+                                            startActivity(encryptChatIntent);
+
+                                        }
                                     }
                                 });
                                 builder.show();

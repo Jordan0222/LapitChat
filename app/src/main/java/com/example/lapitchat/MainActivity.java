@@ -18,6 +18,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -32,14 +37,40 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseUser mCurrent_user;
 
+    String filepath = "";
+    String fileContent = "";
+    String filename = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        filename = "test.txt";
+        String test = "test";
+        fileContent = test.trim();
+
+        if (!fileContent.equals("")) {
+
+            File myExternalFile = new File(getExternalFilesDir(filepath), filename);
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(myExternalFile);
+                fos.write(fileContent.getBytes());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+
+        }
+
+
         mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Lapi Chat");
+        getSupportActionBar().setTitle("Lapit Chat");
 
         mAuth = FirebaseAuth.getInstance();
         mCurrent_user = mAuth.getCurrentUser();
